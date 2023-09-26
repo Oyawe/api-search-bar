@@ -2,9 +2,11 @@
 import { FaSearch } from "react-icons/fa";
 import "./SearchBar.css";
 import { useState } from "react";
+import SearchError from "./SearchError";
 
 export const SearchBar = ({ setResults }) => {
   const [input, setInput] = useState("");
+  const [err, setErr] = useState("");
 
   const fecthData = (value) => {
     fetch("https://jsonplaceholder.typicode.com/users")
@@ -19,8 +21,16 @@ export const SearchBar = ({ setResults }) => {
             user.name.toLowerCase().includes(value)
           );
         });
+
+        if (results.length === 0) {
+          setErr(`No results found for "${value}"`);
+          // console.log(`No results found for "${value}"`);
+        } else {
+          setResults(results);
+          setErr("");
+        }
         // console.log(results);
-        setResults(results);
+        // setResults(results);
       });
   };
 
@@ -30,14 +40,17 @@ export const SearchBar = ({ setResults }) => {
   };
 
   return (
-    <div className="input-wrapper">
-      <FaSearch id="search-icon" />
-      <input
-        type="text"
-        placeholder="Type to serach..."
-        value={input}
-        onChange={(e) => handleChange(e.target.value)}
-      />
-    </div>
+    <>
+      <div className="input-wrapper">
+        <FaSearch id="search-icon" />
+        <input
+          type="text"
+          placeholder="Type to serach..."
+          value={input}
+          onChange={(e) => handleChange(e.target.value)}
+        />
+      </div>
+      <SearchError err={err} />
+    </>
   );
 };
